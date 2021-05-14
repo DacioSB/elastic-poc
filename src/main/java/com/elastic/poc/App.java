@@ -27,7 +27,7 @@ public class App
     public static void main( String[] args ) throws IOException
     {
         final CredentialsProvider provider = new BasicCredentialsProvider();
-        provider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials("elastic", "ty3OiYW8BG7quVkJMS2CBG3q"));
+        provider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials("name", "pass"));
 
         RestClientBuilder builder = RestClient.builder(new HttpHost("6c6bf535e92d458b83c4873d304b2aa8.eastus2.azure.elastic-cloud.com", 9243, "https"))
             .setHttpClientConfigCallback(new RestClientBuilder.HttpClientConfigCallback(){
