@@ -27,7 +27,7 @@ public class App
     public static void main( String[] args ) throws IOException
     {
         final CredentialsProvider provider = new BasicCredentialsProvider();
-        provider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials("elastic", "pass"));
+        provider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials("elastic", "ty3OiYW8BG7quVkJMS2CBG3q"));
 
         RestClientBuilder builder = RestClient.builder(new HttpHost("6c6bf535e92d458b83c4873d304b2aa8.eastus2.azure.elastic-cloud.com", 9243, "https"))
             .setHttpClientConfigCallback(new RestClientBuilder.HttpClientConfigCallback(){
@@ -40,16 +40,23 @@ public class App
         
         RestHighLevelClient client = new RestHighLevelClient(builder);
         
-        query1(client);
+        ;
+        SearchRequest request = new SearchRequest("azure_event_hub-*");
+        request.searchType(SearchType.DFS_QUERY_THEN_FETCH);
+        request.source(query1(client));
+        SearchResponse response = client.search(request, RequestOptions.DEFAULT);
+        System.out.println(response.toString());
         System.out.println("============================================\n==========================================");
-        query2(client);
+        request.source(query2(client));
+        response = client.search(request, RequestOptions.DEFAULT);
+        System.out.println(response.toString());
 
         client.close();
 
 
     }
 
-    private static void query2(RestHighLevelClient client) throws IOException {
+    private static SearchSourceBuilder query2(RestHighLevelClient client) throws IOException {
         SearchSourceBuilder sourceBuilder = new SearchSourceBuilder()
             .query(
                 QueryBuilders
@@ -63,16 +70,11 @@ public class App
             );
         String[] includes = new String[]{"payload"};
         sourceBuilder.fetchSource(includes, null);
-        
-        SearchRequest request = new SearchRequest("azure_event_hub-*");
-        request.searchType(SearchType.DFS_QUERY_THEN_FETCH);
-        request.source(sourceBuilder);
-        
-        SearchResponse response = client.search(request, RequestOptions.DEFAULT);
-        System.out.println(response.toString());
+        return sourceBuilder;
+
     }
 
-    private static void query1(RestHighLevelClient client) throws IOException {
+    private static SearchSourceBuilder query1(RestHighLevelClient client) throws IOException {
         SearchSourceBuilder sourceBuilder = new SearchSourceBuilder()
             .query(
                 QueryBuilders
@@ -81,12 +83,7 @@ public class App
                     .gte("2021-05-05T00:00:00Z"));
         String[] includes = new String[]{"flow_id", "timestamp", "topic"};
         sourceBuilder.fetchSource(includes, null);
+        return sourceBuilder;
 
-        SearchRequest request = new SearchRequest("azure_event_hub-*");
-        request.searchType(SearchType.DFS_QUERY_THEN_FETCH);
-        request.source(sourceBuilder);
-
-        SearchResponse response = client.search(request, RequestOptions.DEFAULT);
-        System.out.println(response.toString());
     }
 }
